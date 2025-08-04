@@ -1,18 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { User, Camera, Save, Upload, Download, Star, Calendar, Settings } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getResources } from '../services/firebase';
 import { Resource } from '../types';
 import ResourceCard from '../components/UI/ResourceCard';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db, storage } from '../firebase/config';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+
 
 const Profile: React.FC = () => {
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { user, updateUserProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'uploads' | 'settings'>('overview');
   const [userResources, setUserResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  
+
   const [profileData, setProfileData] = useState({
     displayName: user?.displayName || '',
     bio: user?.bio || '',
@@ -39,7 +45,7 @@ const Profile: React.FC = () => {
 
   const loadUserResources = async () => {
     if (!user) return;
-    
+
     setLoading(true);
     try {
       // Get all resources uploaded by this user
@@ -57,7 +63,7 @@ const Profile: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
       setProfileData(prev => ({
@@ -74,7 +80,7 @@ const Profile: React.FC = () => {
 
   const handleSaveProfile = async () => {
     if (!user) return;
-    
+
     setSaving(true);
     try {
       await updateUserProfile(profileData);
@@ -88,7 +94,7 @@ const Profile: React.FC = () => {
 
   const handleRoleChange = async (newRole: 'viewer' | 'contributor') => {
     if (!user) return;
-    
+
     setSaving(true);
     try {
       await updateUserProfile({ role: newRole });
@@ -126,6 +132,32 @@ const Profile: React.FC = () => {
     { label: 'Account Type', value: user.role === 'viewer' ? 'Viewer' : 'Contributor', icon: User },
   ];
 
+const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  try {
+    setLoading(true);
+    if (!user || !user.uid) return;
+    const storageRef = ref(storage, `profilePictures/${user.uid}`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+
+    // Update user profile URL in Firestore or Clerk
+    await updateDoc(doc(db, 'users', user.uid), {
+      photoURL: downloadURL,
+    });
+
+    // Optional: refresh user state if needed
+    window.location.reload(); // or use a state to update it in-place
+  } catch (err) {
+    console.error('Error uploading image:', err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -145,9 +177,26 @@ const Profile: React.FC = () => {
                   <User className="h-12 w-12 text-white" />
                 </div>
               )}
-              <button className="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition-colors">
-                <Camera className="h-4 w-4" />
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageUpload}
+              />
+
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition-colors"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="text-xs">Uploading...</span>
+                ) : (
+                  <Camera className="h-4 w-4" />
+                )}
               </button>
+
             </div>
 
             {/* Profile Info */}
@@ -157,11 +206,10 @@ const Profile: React.FC = () => {
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mb-2">{user.email}</p>
               <div className="flex items-center space-x-4">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  user.role === 'contributor' 
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${user.role === 'contributor'
                     ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
                     : 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
-                }`}>
+                  }`}>
                   {user.role === 'contributor' ? 'Contributor' : 'Viewer'}
                 </span>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -200,11 +248,10 @@ const Profile: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
-                    activeTab === tab.id
+                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${activeTab === tab.id
                       ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                       : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-                  }`}
+                    }`}
                 >
                   <tab.icon className="h-4 w-4" />
                   <span>{tab.label}</span>
@@ -286,7 +333,7 @@ const Profile: React.FC = () => {
                       <ResourceCard
                         key={resource.id}
                         resource={resource}
-                        onViewDetails={() => {}}
+                        onViewDetails={() => { }}
                       />
                     ))}
                   </div>
@@ -301,7 +348,7 @@ const Profile: React.FC = () => {
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                     Profile Settings
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
