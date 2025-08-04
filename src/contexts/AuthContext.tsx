@@ -7,8 +7,7 @@ import {
   onAuthStateChanged,
   updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, googleProvider, db } from '../firebase/config';
+import { auth, googleProvider } from '../firebase/config';
 import { AuthContextType, User } from '../types';
 import { createUserProfile, getUserProfile, updateUserProfile as updateUserProfileService } from '../services/firebase';
 
