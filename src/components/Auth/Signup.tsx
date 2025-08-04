@@ -254,6 +254,16 @@ const Signup: React.FC = () => {
                 Sign in here
               </Link>
             </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
+              By creating an account, you agree to our{' '}
+              <Link to="/terms" className="text-blue-600 hover:text-blue-500 dark:text-blue-400">
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy" className="text-blue-600 hover:text-blue-500 dark:text-blue-400">
+                Privacy Policy
+              </Link>
+            </p>
           </div>
         </div>
       </div>

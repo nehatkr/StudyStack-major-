@@ -86,6 +86,22 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               <li>
                 <a
+                  href="/privacy"
+                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/terms"
+                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  Terms of Service
+                </a>
+              </li>
+              <li>
+                <a
                   href="#"
                   className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
@@ -98,22 +114,6 @@ const Footer: React.FC = () => {
                   className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   Community Guidelines
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  Terms of Service
                 </a>
               </li>
             </ul>
