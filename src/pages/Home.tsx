@@ -31,9 +31,9 @@ const Home: React.FC = () => {
   ];
 
   const stats = [
-    { label: 'Active Students', value: '5,000+', icon: Users },
-    { label: 'Resources Shared', value: '15,000+', icon: FileText },
-    { label: 'Downloads', value: '50,000+', icon: Download },
+    { label: 'Active Students', value: '50+', icon: Users },
+    { label: 'Resources Shared', value: '100+', icon: FileText },
+    { label: 'Downloads', value: '50+', icon: Download },
     { label: 'Average Rating', value: '4.8', icon: Star },
   ];
 
@@ -48,7 +48,7 @@ const Home: React.FC = () => {
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
               Welcome to{' '}
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r  from-sky-300 to-indigo-500 bg-clip-text text-transparent">
                 StudyStack
               </span>
             </h1>
@@ -153,7 +153,8 @@ const Home: React.FC = () => {
       {/* CTA Section */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12">
+<div className="bg-gradient-to-r from-sky-400 to-indigo-600 rounded-2xl p-8 md:p-12">
+
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Ready to Join Our Community?
             </h2>

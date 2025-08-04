@@ -34,8 +34,8 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
-            <div className="p-2 bg-blue-600 rounded-lg group-hover:bg-blue-700 transition-colors">
-              <BookOpen className="h-6 w-6 text-white" />
+            <div>
+            <img className="h-10 w-auto rounded-lg " src="/logo.png" alt="StudyStack Logo" />
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               StudyStack

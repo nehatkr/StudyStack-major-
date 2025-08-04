@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Github, Twitter, Mail } from 'lucide-react';
+import { Github, Mail, Linkedin } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -9,8 +9,8 @@ const Footer: React.FC = () => {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="p-2 bg-blue-600 rounded-lg">
-                <BookOpen className="h-6 w-6 text-white" />
+              <div className="p-2 rounded-lg">
+            <img className="h-10 w-auto rounded-lg " src="/logo.png" alt="StudyStack Logo" />
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
                 StudyStack
@@ -22,21 +22,21 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex items-center space-x-4 mt-6">
               <a
-                href="#"
+                href="https://github.com/nehatkr"
                 className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 aria-label="GitHub"
               >
                 <Github className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="https://www.linkedin.com/in/neha-tkr/"
                 className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                aria-label="Twitter"
+                aria-label="Linkedin"
               >
-                <Twitter className="h-5 w-5" />
+                <Linkedin className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="nehathakur2308@gmail.com"
                 className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 aria-label="Email"
               >
