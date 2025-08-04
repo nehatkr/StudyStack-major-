@@ -7,14 +7,13 @@ import {
   getDocs,
   getDoc,
   query,
+  setDoc,
   where,
   orderBy,
   limit,
   startAfter,
   DocumentSnapshot,
   increment,
-  arrayUnion,
-  arrayRemove,
   Timestamp,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
@@ -23,8 +22,7 @@ import { Resource, Comment, Rating, FilterOptions, User } from '../types';
 
 // User operations
 export const createUserProfile = async (uid: string, userData: Omit<User, 'uid'>) => {
-  const userRef = doc(db, 'users', uid);
-  await updateDoc(userRef, {
+  await setDoc(doc(db, 'users', uid), {
     ...userData,
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
@@ -64,6 +62,7 @@ export const uploadResource = async (
   const storageRef = ref(storage, `resources/${Date.now()}_${file.name}`);
   const snapshot = await uploadBytes(storageRef, file);
   const fileURL = await getDownloadURL(snapshot.ref);
+console.log(resourceData, fileURL, file, storageRef, snapshot);
 
   // Create resource document
   const resourceRef = await addDoc(collection(db, 'resources'), {
