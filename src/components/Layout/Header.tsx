@@ -35,7 +35,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <div>
-            <img className="h-10 w-auto rounded-lg " src="/logo.png" alt="StudyStack Logo" />
+            <img className="h-10 w-auto rounded-lg " src="/logo-study-stack.png" alt="StudyStack Logo" />
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               StudyStack

@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="p-2 rounded-lg">
-            <img className="h-10 w-auto rounded-lg " src="/logo.png" alt="StudyStack Logo" />
+            <img className="h-10 w-auto rounded-lg " src="/logo-study-stack.png" alt="StudyStack Logo" />
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
                 StudyStack
