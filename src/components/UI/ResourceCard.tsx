@@ -12,6 +12,7 @@ import {
 import { Resource } from "../../types";
 import { deleteResource, updateResourceDownloads } from "../../services/firebase";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface ResourceCardProps {
   resource: Resource;
@@ -23,6 +24,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
   onViewDetails,
 }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [downloading, setDownloading] = useState(false);
 
   const handleDownload = async () => {
@@ -52,6 +54,10 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
       await deleteResource(resource.id, resource.fileURL);
     } catch (error) {
       console.error("Error deleting file:", error);
+    } finally {
+            const redirectPath = resource.type === 'notes' ? '/notes' : 
+                          resource.type === 'pyq' ? '/pyq' : '/syllabus';
+      navigate(redirectPath);
     }
   };
 
@@ -88,7 +94,13 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
               )}`}
             >
               {resource.type.toUpperCase()}
+              
             </span>
+                 {resource.type === 'pyq' && (
+              <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium">
+                {resource.year}
+              </span>
+            )}     
               <button
                 onClick={() => handleDelete(resource.id)}
                 className="text-red-400 hover:text-red-600 cursor-pointer"
@@ -96,11 +108,6 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
               >
                 <Trash2 size={18} />
               </button>
-            {resource.year && (
-              <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium">
-                {resource.year}
-              </span>
-            )}
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
             {resource.title}

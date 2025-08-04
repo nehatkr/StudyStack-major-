@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const newUserProfile: Omit<User, 'uid'> = {
             email: firebaseUser.email || '',
             displayName: firebaseUser.displayName || '',
-            photoURL: firebaseUser.photoURL || undefined,
+            photoURL: firebaseUser.photoURL || '',
             bio: '',
             role: 'viewer',
             showContactInfo: false,
@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userProfile: Omit<User, 'uid'> = {
       email,
       displayName,
-      photoURL: undefined,
+      photoURL: '',
       bio: '',
       role: 'viewer',
       showContactInfo: false,
