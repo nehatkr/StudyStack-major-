@@ -101,13 +101,15 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
                 {resource.year}
               </span>
             )}     
-              <button
-                onClick={() => handleDelete(resource.id)}
-                className="text-red-400 hover:text-red-600 cursor-pointer"
-                title="Delete"
-              >
-                <Trash2 size={18} />
-              </button>
+               { user.role=='contributor' && ( 
+            <button
+              onClick={handleDelete}
+              className="text-red-400 hover:text-red-600 cursor-pointer"
+              title="Delete"
+            >
+              <Trash2 size={18} />
+            </button>
+          )}
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
             {resource.title}
