@@ -15,7 +15,7 @@ const Upload: React.FC = () => {
     type: 'notes' as 'notes' | 'pyq' | 'syllabus',
     subject: '',
     semester: '',
-    year: '',
+    year: 0,
     tags: [] as string[],
     showContact: false,
   });
@@ -114,12 +114,12 @@ const Upload: React.FC = () => {
         type: formData.type,
         subject: formData.subject,
         semester: formData.semester,
-        year: formData.year || undefined,
+        year: formData.year || (new Date().getFullYear()),
         tags: formData.tags,
         uploaderUID: user.uid,
         uploaderName: user.displayName,
-        uploaderEmail: formData.showContact ? user.email : undefined,
-        uploaderPhone: formData.showContact ? user.phoneNumber : undefined,
+        uploaderEmail: formData.showContact ? user.email : '',
+        uploaderPhone: formData.showContact ? user.phoneNumber : '',
         showUploaderContact: formData.showContact,
       };
 
@@ -275,7 +275,7 @@ const Upload: React.FC = () => {
                   Year
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   id="year"
                   name="year"
                   value={formData.year}
