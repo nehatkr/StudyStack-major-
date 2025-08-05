@@ -179,7 +179,7 @@ console.log(resourceData, fileURL, file, storageRef, snapshot);
 export const getResources = async (filters: FilterOptions = {}, lastDoc?: DocumentSnapshot) => {
   let q = query(collection(db, 'resources'), orderBy('createdAt', 'desc'));
 
-  // Apply filters
+  // Apply Firestore filters
   if (filters.type) {
     q = query(q, where('type', '==', filters.type));
   }
@@ -200,11 +200,12 @@ export const getResources = async (filters: FilterOptions = {}, lastDoc?: Docume
   if (lastDoc) {
     q = query(q, startAfter(lastDoc));
   }
-  q = query(q, limit(20));
+
+  q = query(q, limit(20)); // Fetch 20 docs
 
   const querySnapshot = await getDocs(q);
-  const resources: Resource[] = [];
-  
+  let resources: Resource[] = [];
+
   querySnapshot.forEach((doc) => {
     const data = doc.data();
     resources.push({
@@ -214,6 +215,15 @@ export const getResources = async (filters: FilterOptions = {}, lastDoc?: Docume
       updatedAt: data.updatedAt.toDate(),
     } as Resource);
   });
+
+  // Client-side search filtering
+  if (filters.search && filters.search.trim() !== '') {
+    const searchLower = filters.search.toLowerCase();
+
+    resources = resources.filter((resource) =>
+      JSON.stringify(resource).toLowerCase().includes(searchLower)
+    );
+  }
 
   return {
     resources,

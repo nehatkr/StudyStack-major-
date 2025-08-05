@@ -56,11 +56,12 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
       await deleteResource(resource.id, resource.fileURL);
     } catch (error) {
       console.error("Error deleting file:", error);
-    } finally {
-      const redirectPath = resource.type === 'notes' ? '/notes' :
-        resource.type === 'pyq' ? '/pyq' : '/syllabus';
-      navigate(redirectPath);
-    }
+    } 
+    // finally {
+    //   const redirectPath = resource.type === 'notes' ? '/notes' :
+    //     resource.type === 'pyq' ? '/pyq' : '/syllabus';
+    //   navigate(redirectPath);
+    // }
   };
 
   const formatFileSize = (bytes: number) => {
