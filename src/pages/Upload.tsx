@@ -8,18 +8,18 @@ import { Resource } from '../types';
 const Upload: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     type: 'notes' as 'notes' | 'pyq' | 'syllabus',
     subject: '',
     semester: '',
-    year: 0,
+    year: '',
     tags: [] as string[],
     showContact: false,
   });
-  
+
   const [tagInput, setTagInput] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ const Upload: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({
@@ -57,13 +57,13 @@ const Upload: React.FC = () => {
         setError('Please upload only PDF files');
         return;
       }
-      
+
       // Validate file size (max 10MB)
       if (selectedFile.size > 10 * 1024 * 1024) {
         setError('File size must be less than 10MB');
         return;
       }
-      
+
       setFile(selectedFile);
       setError('');
     }
@@ -88,7 +88,7 @@ const Upload: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       setError('You must be logged in to upload resources');
       return;
@@ -124,10 +124,10 @@ const Upload: React.FC = () => {
       };
 
       await uploadResource(file, resourceData);
-      
+
       // Redirect to appropriate page
-      const redirectPath = formData.type === 'notes' ? '/notes' : 
-                          formData.type === 'pyq' ? '/pyq' : '/syllabus';
+      const redirectPath = formData.type === 'notes' ? '/notes' :
+        formData.type === 'pyq' ? '/pyq' : '/syllabus';
       navigate(redirectPath);
     } catch (err: any) {
       setError(err.message || 'Failed to upload resource');
@@ -275,13 +275,26 @@ const Upload: React.FC = () => {
                   Year
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   id="year"
                   name="year"
                   value={formData.year}
                   onChange={handleInputChange}
+                  onKeyDown={(e) => {
+                    const allowed = /[0-9\-]/;
+                    if (
+                      !allowed.test(e.key) &&
+                      e.key !== 'Backspace' &&
+                      e.key !== 'Delete' &&
+                      e.key !== 'ArrowLeft' &&
+                      e.key !== 'ArrowRight'
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                   className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  placeholder="e.g., 2023, 2022"
+                  placeholder="e.g., 2021-2025"
+                  pattern="^\d{4}-\d{4}$"
                 />
               </div>
             )}
