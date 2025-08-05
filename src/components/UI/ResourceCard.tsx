@@ -187,6 +187,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
                     <a
                       href={`mailto:${resource.uploaderEmail}`}
                       className="hover:underline"
+                       title="Click to send an email"
                     >
                       <span>{resource.uploaderEmail}</span>
                     </a>
