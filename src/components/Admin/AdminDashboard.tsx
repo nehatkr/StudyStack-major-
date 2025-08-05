@@ -55,6 +55,9 @@ const AdminDashboard: React.FC = () => {
     rejected: applications.filter(app => app.status === 'rejected').length,
   };
 
+  console.log(user);
+  
+
   if (user?.role !== 'admin') {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
