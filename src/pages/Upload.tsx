@@ -295,6 +295,7 @@ const Upload: React.FC = () => {
                   className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="e.g., 2021-2025"
                   pattern="^\d{4}-\d{4}$"
+                  title="Enter a valid year range like 2021-2025"
                 />
               </div>
             )}
