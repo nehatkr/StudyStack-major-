@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { User, Camera, Save, Upload, Download, Star, Calendar, Settings } from 'lucide-react';
+import { User, Camera, Save, Upload, Download, Star, Calendar, Settings, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getResources } from '../services/firebase';
-import { Resource } from '../types';
+import { getResources, getUserContributorApplication } from '../services/firebase';
+import { Resource, ContributorApplication } from '../types';
 import ResourceCard from '../components/UI/ResourceCard';
+import ContributorApplicationModal from '../components/UI/ContributorApplicationModal';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase/config';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
@@ -15,6 +16,8 @@ const Profile: React.FC = () => {
   const { user, updateUserProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'uploads' | 'settings'>('overview');
   const [userResources, setUserResources] = useState<Resource[]>([]);
+  const [contributorApplication, setContributorApplication] = useState<ContributorApplication | null>(null);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -41,7 +44,21 @@ const Profile: React.FC = () => {
     if (user && user.role === 'contributor') {
       loadUserResources();
     }
+    if (user) {
+      loadContributorApplication();
+    }
   }, [user]);
+
+  const loadContributorApplication = async () => {
+    if (!user) return;
+
+    try {
+      const application = await getUserContributorApplication(user.uid);
+      setContributorApplication(application);
+    } catch (error) {
+      console.error('Error loading contributor application:', error);
+    }
+  };
 
   const loadUserResources = async () => {
     if (!user) return;
@@ -92,17 +109,13 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleRoleChange = async (newRole: 'viewer' | 'contributor') => {
-    if (!user) return;
+  const handleApplyForContributor = () => {
+    setShowApplicationModal(true);
+  };
 
-    setSaving(true);
-    try {
-      await updateUserProfile({ role: newRole });
-    } catch (error) {
-      console.error('Error updating role:', error);
-    } finally {
-      setSaving(false);
-    }
+  const handleApplicationSuccess = () => {
+    setShowApplicationModal(false);
+    loadContributorApplication();
   };
 
   if (!user) {
@@ -455,37 +468,87 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                     Account Type
                   </h3>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Choose your account type. Contributors can upload resources, while viewers can only browse and download.
-                    </p>
-                    <div className="space-y-2">
-                      <label className="flex items-center">
-                        <input
-                          type="radio"
-                          name="role"
-                          value="viewer"
-                          checked={user.role === 'viewer'}
-                          onChange={() => handleRoleChange('viewer')}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                        />
-                        <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                          Viewer - Browse and download resources
-                        </span>
-                      </label>
-                      <label className="flex items-center">
-                        <input
-                          type="radio"
-                          name="role"
-                          value="contributor"
-                          checked={user.role === 'contributor'}
-                          onChange={() => handleRoleChange('contributor')}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                        />
-                        <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                          Contributor - Upload and share resources
-                        </span>
-                      </label>
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          Current Role: {user.role === 'contributor' ? 'Contributor' : user.role === 'admin' ? 'Admin' : 'Viewer'}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {user.role === 'contributor' 
+                            ? 'You can upload and share resources with the community.'
+                            : user.role === 'admin'
+                            ? 'You have administrative privileges.'
+                            : 'You can browse and download resources.'
+                          }
+                        </p>
+                      </div>
                     </div>
+
+                    {/* Contributor Application Status */}
+                    {user.role === 'viewer' && (
+                      <div className="mt-4">
+                        {contributorApplication ? (
+                          <div className="space-y-3">
+                            <div className="flex items-center space-x-2">
+                              {contributorApplication.status === 'pending' && (
+                                <>
+                                  <Clock className="h-5 w-5 text-yellow-600" />
+                                  <span className="text-sm font-medium text-yellow-800 dark:text-yellow-400">
+                                    Application Pending Review
+                                  </span>
+                                </>
+                              )}
+                              {contributorApplication.status === 'approved' && (
+                                <>
+                                  <CheckCircle className="h-5 w-5 text-green-600" />
+                                  <span className="text-sm font-medium text-green-800 dark:text-green-400">
+                                    Application Approved
+                                  </span>
+                                </>
+                              )}
+                              {contributorApplication.status === 'rejected' && (
+                                <>
+                                  <XCircle className="h-5 w-5 text-red-600" />
+                                  <span className="text-sm font-medium text-red-800 dark:text-red-400">
+                                    Application Rejected
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              Applied on {contributorApplication.appliedAt.toLocaleDateString()}
+                              {contributorApplication.reviewedAt && (
+                                <span>
+                                  {' • '}
+                                  {contributorApplication.status === 'approved' ? 'Approved' : 'Rejected'} on{' '}
+                                  {contributorApplication.reviewedAt.toLocaleDateString()}
+                                </span>
+                              )}
+                            </p>
+                            {contributorApplication.status === 'rejected' && (
+                              <button
+                                onClick={handleApplyForContributor}
+                                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                              >
+                                Apply Again
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                              Want to share resources with the community? Apply to become a contributor.
+                            </p>
+                            <button
+                              onClick={handleApplyForContributor}
+                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                            >
+                              Apply for Contributor
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -493,6 +556,14 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
           </div>
         </div>
       </div>
+
+      {/* Contributor Application Modal */}
+      {showApplicationModal && (
+        <ContributorApplicationModal
+          onClose={() => setShowApplicationModal(false)}
+          onSuccess={handleApplicationSuccess}
+        />
+      )}
     </div>
   );
 };

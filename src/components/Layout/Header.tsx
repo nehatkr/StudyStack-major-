@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Moon, Sun, Menu, X, User, LogOut, Upload, Home } from 'lucide-react';
+import { BookOpen, Moon, Sun, Menu, X, User, LogOut, Upload, Home, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -109,6 +109,16 @@ const Header: React.FC = () => {
                       >
                         <Upload className="h-4 w-4" />
                         <span>Upload</span>
+                      </Link>
+                    )}
+                    {user.role === 'admin' && (
+                      <Link
+                        to="/admin"
+                        className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <Shield className="h-4 w-4" />
+                        <span>Admin Panel</span>
                       </Link>
                     )}
                     <button

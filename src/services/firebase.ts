@@ -18,7 +18,7 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '../firebase/config';
-import { Resource, Comment, Rating, FilterOptions, User } from '../types';
+import { Resource, Comment, Rating, FilterOptions, User, ContributorApplication } from '../types';
 
 // User operations
 export const createUserProfile = async (uid: string, userData: Omit<User, 'uid'>) => {
@@ -50,6 +50,100 @@ export const updateUserProfile = async (uid: string, userData: Partial<User>) =>
   await updateDoc(userRef, {
     ...userData,
     updatedAt: Timestamp.now(),
+  });
+};
+
+// Contributor application operations
+export const submitContributorApplication = async (
+  applicationData: Omit<ContributorApplication, 'id' | 'status' | 'appliedAt' | 'reviewedAt' | 'reviewedBy'>
+) => {
+  // Check if user already has a pending or approved application
+  const q = query(
+    collection(db, 'contributorApplications'),
+    where('userId', '==', applicationData.userId),
+    where('status', 'in', ['pending', 'approved'])
+  );
+  
+  const existingApplications = await getDocs(q);
+  
+  if (!existingApplications.empty) {
+    throw new Error('You already have a pending or approved application');
+  }
+
+  const applicationRef = await addDoc(collection(db, 'contributorApplications'), {
+    ...applicationData,
+    status: 'pending',
+    appliedAt: Timestamp.now(),
+  });
+
+  return applicationRef.id;
+};
+
+export const getContributorApplications = async (): Promise<ContributorApplication[]> => {
+  const q = query(collection(db, 'contributorApplications'), orderBy('appliedAt', 'desc'));
+  const querySnapshot = await getDocs(q);
+  const applications: ContributorApplication[] = [];
+  
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    applications.push({
+      id: doc.id,
+      ...data,
+      appliedAt: data.appliedAt.toDate(),
+      reviewedAt: data.reviewedAt?.toDate(),
+    } as ContributorApplication);
+  });
+
+  return applications;
+};
+
+export const getUserContributorApplication = async (userId: string): Promise<ContributorApplication | null> => {
+  const q = query(
+    collection(db, 'contributorApplications'),
+    where('userId', '==', userId),
+    orderBy('appliedAt', 'desc'),
+    limit(1)
+  );
+  
+  const querySnapshot = await getDocs(q);
+  
+  if (!querySnapshot.empty) {
+    const doc = querySnapshot.docs[0];
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      appliedAt: data.appliedAt.toDate(),
+      reviewedAt: data.reviewedAt?.toDate(),
+    } as ContributorApplication;
+  }
+  
+  return null;
+};
+
+export const approveContributorApplication = async (applicationId: string, userId: string, reviewerId: string) => {
+  // Update application status
+  const applicationRef = doc(db, 'contributorApplications', applicationId);
+  await updateDoc(applicationRef, {
+    status: 'approved',
+    reviewedAt: Timestamp.now(),
+    reviewedBy: reviewerId,
+  });
+
+  // Update user role to contributor
+  const userRef = doc(db, 'users', userId);
+  await updateDoc(userRef, {
+    role: 'contributor',
+    updatedAt: Timestamp.now(),
+  });
+};
+
+export const rejectContributorApplication = async (applicationId: string, reviewerId: string) => {
+  const applicationRef = doc(db, 'contributorApplications', applicationId);
+  await updateDoc(applicationRef, {
+    status: 'rejected',
+    reviewedAt: Timestamp.now(),
+    reviewedBy: reviewerId,
   });
 };
 

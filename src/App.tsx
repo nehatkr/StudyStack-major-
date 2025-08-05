@@ -12,6 +12,7 @@ import Upload from './pages/Upload';
 import Profile from './pages/Profile';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import AdminDashboard from './components/Admin/AdminDashboard';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 
@@ -32,6 +33,7 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
               </Routes>

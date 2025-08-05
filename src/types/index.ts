@@ -4,10 +4,27 @@ export interface User {
   displayName?: string;
   photoURL?: string;
   bio?: string;
-  phone?: string;
-  isContributor?: boolean;
+  phoneNumber?: string;
+  role: 'viewer' | 'contributor' | 'admin';
+  showContactInfo: boolean;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ContributorApplication {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  name: string;
+  collegeRollNumber: string;
+  universityRollNumber: string;
+  batch: string;
+  semester?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  appliedAt: Date;
+  reviewedAt?: Date;
+  reviewedBy?: string;
 }
 
 export interface Resource {
@@ -22,15 +39,14 @@ export interface Resource {
   fileURL: string;
   fileName: string;
   fileSize: number;
-  uploadedBy: string;
+  uploaderUID: string;
   uploaderName: string;
   uploaderEmail?: string;
   uploaderPhone?: string;
-  showContact: boolean;
-  ratings: Rating[];
+  showUploaderContact: boolean;
+  downloads: number;
   averageRating: number;
   totalRatings: number;
-  downloadCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,9 +66,8 @@ export interface Comment {
   userId: string;
   userName: string;
   userPhoto?: string;
-  text: string;
+  content: string;
   createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface ThemeContextType {
@@ -61,11 +76,20 @@ export interface ThemeContextType {
 }
 
 export interface AuthContextType {
-  currentUser: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, displayName: string) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
-  logout: () => Promise<void>;
-  updateProfile: (updates: Partial<User>) => Promise<void>;
+  user: User | null;
   loading: boolean;
+  signUp: (email: string, password: string, displayName: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
+  updateUserProfile: (data: Partial<User>) => Promise<void>;
+}
+
+export interface FilterOptions {
+  type?: string;
+  subject?: string;
+  semester?: string;
+  year?: string;
+  tags?: string[];
+  search?: string;
 }
