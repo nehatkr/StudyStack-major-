@@ -17,10 +17,12 @@ import { useNavigate } from "react-router-dom";
 interface ResourceCardProps {
   resource: Resource;
   onViewDetails: (resource: Resource) => void;
+  isUploadsTab?: boolean;
 }
 
 const ResourceCard: React.FC<ResourceCardProps> = ({
   resource,
+  isUploadsTab,
   onViewDetails,
 }) => {
   const { user } = useAuth();
@@ -101,7 +103,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
                 {resource.year}
               </span>
             )}     
-               { user.role=='contributor' && ( 
+               { user.role=='contributor' && isUploadsTab && ( 
             <button
               onClick={handleDelete}
               className="text-red-400 hover:text-red-600 cursor-pointer"

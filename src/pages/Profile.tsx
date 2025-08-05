@@ -333,6 +333,7 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                       <ResourceCard
                         key={resource.id}
                         resource={resource}
+                        isUploadsTab={true}
                         onViewDetails={() => { }}
                       />
                     ))}
