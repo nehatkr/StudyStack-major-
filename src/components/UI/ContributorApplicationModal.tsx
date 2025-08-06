@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, Hash, GraduationCap, Calendar, Send } from 'lucide-react';
+import { X, User, Hash, GraduationCap, Calendar, Send, Mail } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { submitContributorApplication } from '../../services/firebase';
 

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { User, Camera, Save, Upload, Download, Star, Calendar, Settings, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { User, Camera, Save, Upload, Download, Star, Calendar, Settings, Clock, CheckCircle, XCircle, Mail } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getResources, getUserContributorApplication } from '../services/firebase';
 import { Resource, ContributorApplication } from '../types';
@@ -11,7 +11,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 
 const Profile: React.FC = () => {
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user, updateUserProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'uploads' | 'settings'>('overview');
@@ -145,30 +145,30 @@ const Profile: React.FC = () => {
     { label: 'Account Type', value: user.role === 'viewer' ? 'Viewer' : 'Contributor', icon: User },
   ];
 
-const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  try {
-    setLoading(true);
-    if (!user || !user.uid) return;
-    const storageRef = ref(storage, `profilePictures/${user.uid}`);
-    await uploadBytes(storageRef, file);
-    const downloadURL = await getDownloadURL(storageRef);
+    try {
+      setLoading(true);
+      if (!user || !user.uid) return;
+      const storageRef = ref(storage, `profilePictures/${user.uid}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
 
-    // Update user profile URL in Firestore or Clerk
-    await updateDoc(doc(db, 'users', user.uid), {
-      photoURL: downloadURL,
-    });
+      // Update user profile URL in Firestore or Clerk
+      await updateDoc(doc(db, 'users', user.uid), {
+        photoURL: downloadURL,
+      });
 
-    // Optional: refresh user state if needed
-    window.location.reload(); // or use a state to update it in-place
-  } catch (err) {
-    console.error('Error uploading image:', err);
-  } finally {
-    setLoading(false);
-  }
-};
+      // Optional: refresh user state if needed
+      window.location.reload(); // or use a state to update it in-place
+    } catch (err) {
+      console.error('Error uploading image:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
@@ -220,8 +220,8 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
               <p className="text-gray-600 dark:text-gray-400 mb-2">{user.email}</p>
               <div className="flex items-center space-x-4">
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${user.role === 'contributor'
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                    : 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
                   }`}>
                   {user.role === 'contributor' ? 'Contributor' : 'Viewer'}
                 </span>
@@ -262,8 +262,8 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                     }`}
                 >
                   <tab.icon className="h-4 w-4" />
@@ -474,11 +474,11 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                           Current Role: {user.role === 'contributor' ? 'Contributor' : user.role === 'admin' ? 'Admin' : 'Viewer'}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {user.role === 'contributor' 
+                          {user.role === 'contributor'
                             ? 'You can upload and share resources with the community.'
                             : user.role === 'admin'
-                            ? 'You have administrative privileges.'
-                            : 'You can browse and download resources.'
+                              ? 'You have administrative privileges.'
+                              : 'You can browse and download resources.'
                           }
                         </p>
                       </div>
@@ -541,12 +541,17 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                             </p>
                             <button
                               onClick={handleApplyForContributor}
-                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors "
                             >
                               Apply for Contributor
                             </button>
                           </div>
                         )}
+                        <div className="text-sm text-gray-600 dark:text-gray-400  py-3" >
+                          If you experience any difficulties during the contributor application process,
+                          or if you do not receive a response from us with in two days  of applying , <br />
+                            please feel free to contact us via email: <a className='text-gray-300' href="mailto:nehathakur2308@gamil.com rishikasingh2109@gmail.com">nehathakur2308@gamil.com | rishikasingh2109@gmail.com</a>
+                        </div>
                       </div>
                     )}
                   </div>
