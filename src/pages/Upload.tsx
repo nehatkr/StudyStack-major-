@@ -58,9 +58,9 @@ const Upload: React.FC = () => {
         return;
       }
 
-      // Validate file size (max 10MB)
-      if (selectedFile.size > 10 * 1024 * 1024) {
-        setError('File size must be less than 10MB');
+      // Validate file size (max 16MB)
+      if (selectedFile.size > 16 * 1024 * 1024) {
+        setError('File size must be less than 16MB');
         return;
       }
 
@@ -344,7 +344,7 @@ const Upload: React.FC = () => {
             {/* File Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                File Upload * (PDF only, max 10MB)
+                File Upload * (PDF only, max 16MB)
               </label>
               <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
                 <div className="space-y-1 text-center">
@@ -385,7 +385,7 @@ const Upload: React.FC = () => {
                         </label>
                         <p className="pl-1">or drag and drop</p>
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">PDF up to 10MB</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">PDF up to 16MB</p>
                     </>
                   )}
                 </div>
